@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SANHUB – Live Websites Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f7fd;--card:#fff;--ink:#0f1b3d;--mute:#6b7799;--line:#e3e9f6;--blue:#1d7bff;--grad:linear-gradient(90deg,#1ab2ff,#6d4cff);--green:#12a361;--greenbg:#dcf7e8;--amber:#e08a00;--amberbg:#fff0d4;--red:#e5484d;--redbg:#ffe5e6}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;height:100dvh;overflow:hidden;overscroll-behavior:none;-webkit-text-size-adjust:100%}
+body{font-family:'Plus Jakarta Sans','Segoe UI',system-ui,sans-serif;background:#dfe6f5;color:var(--ink);display:flex;justify-content:center;position:fixed;inset:0;width:100%}
+.app{width:100%;max-width:430px;height:100%;background:var(--bg);position:relative;overflow:hidden;display:flex;flex-direction:column}
+.view{flex:1 1 auto;min-height:0;padding:0 16px 24px;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;display:none}
+.view.on{display:block}
+.top{display:flex;align-items:center;gap:10px;padding:14px 0 10px}
+.top h2{font-size:18px;font-weight:700;flex:1}
+.ib{width:38px;height:38px;border-radius:12px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;cursor:pointer;color:var(--ink);font-size:16px}
+.logo{width:42px;height:42px;border-radius:13px;background:var(--grad);color:#fff;display:grid;place-items:center;font-weight:800;font-size:20px;flex:none;overflow:hidden}
+.logo img{width:100%;height:100%;object-fit:cover}
+.hello{padding:6px 0 12px}.hello h1{font-size:22px;font-weight:800}.hello p{color:var(--mute);font-size:13px;margin-top:2px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px}
+.stat b{font-size:24px;font-weight:800;display:block}.stat span{font-size:11.5px;color:var(--mute)}
+.search{display:flex;gap:8px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:0 12px;margin-bottom:12px}
+.search input{flex:1;border:0;outline:0;background:none;padding:12px 0;font:inherit;font-size:16px;color:var(--ink)}
+.chips{display:flex;gap:8px;overflow-x:auto;margin-bottom:14px;scrollbar-width:none}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--mute);padding:7px 14px;border-radius:99px;font:inherit;font-size:12.5px;font-weight:600;white-space:nowrap;cursor:pointer}
+.chip.on{background:var(--grad);border-color:transparent;color:#fff}
+.sec{display:flex;justify-content:space-between;align-items:baseline;margin:6px 0 10px}
+.sec h3{font-size:15px;font-weight:700}.sec a{font-size:12.5px;color:var(--blue);font-weight:600;cursor:pointer}
+.qa{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.qa button{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 6px;font:inherit;font-size:12px;font-weight:600;color:var(--ink);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px}
+.qa i{font-style:normal;width:36px;height:36px;border-radius:50%;background:#eaf2ff;display:grid;place-items:center;font-size:17px}
+.site{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px;margin-bottom:10px;display:flex;gap:12px;align-items:center;cursor:pointer}
+.ico{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:22px;flex:none;background:#e8f0ff}
+.site .m{flex:1;min-width:0}.site .m b{font-size:14px;font-weight:700;display:flex;justify-content:space-between;gap:8px}
+.site .m b span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.site .m small{color:var(--mute);font-size:11.5px;display:block;margin:1px 0 3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.site .m u{color:var(--blue);font-size:11.5px;text-decoration:none;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tag{font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:99px;flex:none}
+.tag.live{background:var(--greenbg);color:var(--green)}.tag.draft{background:var(--amberbg);color:var(--amber)}
+.empty{text-align:center;color:var(--mute);font-size:13px;padding:30px 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
+.btn{width:100%;border:0;border-radius:14px;padding:14px;font:inherit;font-weight:700;font-size:14.5px;cursor:pointer;background:var(--grad);color:#fff;box-shadow:0 8px 18px rgba(80,90,255,.25);display:block;text-align:center;text-decoration:none}
+.btn:disabled{opacity:.6;cursor:wait}
+.btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.btn.del{background:var(--redbg);color:var(--red);box-shadow:none}
+.row{display:flex;gap:10px;margin-top:10px}
+label{display:block;font-size:12.5px;font-weight:600;margin:12px 0 6px}
+.fld{width:100%;border:1px solid var(--line);background:#f8faff;border-radius:12px;padding:12px;font:inherit;font-size:16px;color:var(--ink);outline:0}
+textarea.fld{font-family:ui-monospace,Consolas,monospace;font-size:16px;min-height:150px}
+.fld:focus{border-color:var(--blue);background:#fff}
+.sw{display:flex;justify-content:space-between;align-items:center;margin:16px 0}
+.tg{width:46px;height:27px;border-radius:99px;background:#cdd5ea;position:relative;cursor:pointer;transition:.2s;flex:none}
+.tg::after{content:"";position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.tg.on{background:var(--blue)}.tg.on::after{left:22px}
+.hero{display:flex;gap:12px;align-items:center;margin-bottom:14px}.hero b{font-size:18px}.hero small{color:var(--mute);font-size:12px;display:block}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line);font-size:13px}.kv span{color:var(--mute)}
+.act{display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--line);font-size:13px;align-items:center}.act:first-child{border:0}
+.act i{width:9px;height:9px;border-radius:50%;background:var(--green);flex:none}.act small{display:block;color:var(--mute);font-size:11.5px}
+.menu{display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid var(--line);font-size:14px;font-weight:600;cursor:pointer}.menu:first-child{border:0}.menu em{margin-left:auto;font-style:normal;color:var(--mute);font-weight:500;font-size:12.5px}
+.nav{flex:none;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-top:1px solid var(--line);display:none;padding:8px 8px calc(8px + min(env(safe-area-inset-bottom,0px),20px));z-index:5}
+.nav.on{display:flex}
+.nav button{flex:1;border:0;background:none;font:inherit;font-size:10.5px;font-weight:600;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px;cursor:pointer}
+.nav button span{font-size:19px}.nav button.on{color:var(--blue)}
+.toast{position:absolute;left:50%;bottom:84px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:9;max-width:90%;text-align:center}
+.toast.on{opacity:1;transform:translateX(-50%)}
+.repo{display:flex;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line);cursor:pointer}.repo:first-child{border:0}
+.repo b{font-size:13.5px;display:block}.repo small{color:var(--mute);font-size:11.5px}
+.seg{display:flex;background:#e8eefb;border-radius:12px;padding:3px;margin-bottom:12px}
+.seg button{flex:1;border:0;background:none;padding:9px;border-radius:10px;font:inherit;font-weight:600;font-size:13px;color:var(--mute);cursor:pointer}
+.seg button.on{background:var(--card);color:var(--blue);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.login{display:flex;flex-direction:column;justify-content:center;min-height:100%;padding-bottom:30px}
+.login .logo{width:72px;height:72px;font-size:36px;border-radius:22px;margin:0 auto 10px}
+.login h1{text-align:center;font-size:26px;font-weight:800}.login p.s{text-align:center;color:var(--blue);font-weight:600;font-size:14px;margin-bottom:26px}
+.note{font-size:12px;color:var(--mute);line-height:1.5;margin-top:12px}.note a{color:var(--blue)}
+.spin{text-align:center;color:var(--mute);padding:30px;font-size:13px}
+.modal{position:absolute;inset:0;background:rgba(15,27,61,.45);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}.modal.on{display:flex}.mbox{background:#fff;border-radius:20px;padding:20px;width:100%}.mbox h3{font-size:17px}.mbox p{color:var(--mute);font-size:13px;margin:6px 0 12px;white-space:pre-line}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<section class="view on" id="login">
+  <div class="login">
+    <div class="logo" id="loginLogo">S</div>
+    <h1>SANHUB</h1><p class="s">Live Websites Hub</p>
+    <div class="card">
+      <h3 style="font-size:17px">Welcome back</h3>
+      <p style="color:var(--mute);font-size:13px;margin-top:2px">Connect GitHub to manage your websites</p>
+      <label for="tok">GitHub token</label>
+      <input class="fld" id="tok" type="password" placeholder="ghp_… or github_pat_…" autocomplete="off">
+      <button class="btn" id="loginBtn" style="margin-top:16px" onclick="login()">Connect GitHub</button>
+      <p class="note">Token needs <b>repo</b> and <b>delete_repo</b> access. <a href="https://github.com/settings/tokens/new?scopes=repo,delete_repo&description=SANHUB" target="_blank" rel="noopener">Create a token</a>. It stays only in this browser.</p>
+    </div>
+  </div>
+</section>
+
+<section class="view" id="home">
+  <div class="top"><div class="logo" id="av1">S</div><div style="flex:1"><b style="font-size:15px" id="uName">…</b><small style="display:block;color:var(--mute);font-size:11.5px" id="uLogin"></small></div><button class="ib" onclick="refresh()" aria-label="Refresh">⟳</button></div>
+  <div class="hello"><h1 id="hi">Hello 👋</h1><p>Your websites are live and growing!</p></div>
+  <div class="stats" id="stats"></div>
+  <div class="search">🔍<input id="q1" placeholder="Search websites…" aria-label="Search websites"></div>
+  <div class="chips" id="chips1"></div>
+  <div class="sec"><h3>Quick actions</h3></div>
+  <div class="qa">
+    <button onclick="go('add')"><i>＋</i>Add website</button>
+    <button onclick="go('github')"><i>🐙</i>GitHub repos</button>
+    <button onclick="go('render')"><i>🚀</i>Render deploy</button>
+    <button onclick="go('rdSet')"><i>🛠️</i>Render settings</button>
+    <button onclick="go('render');setTimeout(()=>$('rdBp').scrollIntoView(),60)"><i>📐</i>Blueprint</button>
+    <button onclick="go('profile')"><i>⚙️</i>Settings</button>
+  </div>
+  <div class="sec"><h3>My websites</h3><a onclick="go('sites')">View all</a></div>
+  <div id="homeList"></div>
+</section>
+
+<section class="view" id="sites">
+  <div class="top"><button class="ib" onclick="go('home')" aria-label="Back">←</button><h2 id="allTitle">All websites</h2></div>
+  <div class="search">🔍<input id="q2" placeholder="Search websites…" aria-label="Search websites"></div>
+  <div class="chips" id="chips2"></div>
+  <div id="allList"></div>
+</section>
+
+<section class="view" id="detail">
+  <div class="top"><button class="ib" onclick="go('sites')" aria-label="Back">←</button><h2>Website details</h2></div>
+  <div class="card" id="detailCard"></div>
+</section>
+
+<section class="view" id="add">
+  <div class="top"><button class="ib" onclick="go('home')" aria-label="Back">←</button><h2>Add website</h2></div>
+  <div class="card">
+    <label style="margin-top:0" for="fName">Website name *</label><input class="fld" id="fName" placeholder="e.g. my-portfolio" autocapitalize="off">
+    <label for="fDesc">Description</label><input class="fld" id="fDesc" placeholder="Short description about your website">
+    <label for="fCode">HTML code</label><textarea class="fld" id="fCode" placeholder="Paste your index.html here"></textarea>
+    <label for="fFile">Add files (HTML, CSS, JS, images)</label><input class="fld" id="fFile" type="file" multiple accept=".html,.htm,.css,.js,.json,.png,.jpg,.jpeg,.gif,.svg,.webp,.ico,.txt">
+    <div id="extraList" class="note"></div>
+    <button class="btn ghost" style="margin-top:12px" onclick="previewCode('fCode','pv1')">Preview</button>
+    <iframe id="pv1" sandbox="allow-scripts" style="display:none;width:100%;height:260px;border:1px solid var(--line);border-radius:12px;margin-top:10px;background:#fff"></iframe>
+    <label for="fIcon">Website icon (optional)</label><input class="fld" id="fIcon" type="file" accept="image/*">
+    <div class="sw"><b style="font-size:13.5px">Go live (GitHub Pages)</b><div class="tg on" id="fLive" role="switch" aria-checked="true" tabindex="0"></div></div>
+    <button class="btn" id="saveBtn" onclick="addSite()">Save website</button>
+    <p class="note">This creates a public repository, uploads index.html and turns on GitHub Pages. The link usually works within a minute or two.</p>
+  </div>
+</section>
+
+<section class="view" id="editor">
+  <div class="top"><button class="ib" onclick="go('detail')" aria-label="Back">←</button><h2>Edit code</h2></div>
+  <div class="card">
+    <label style="margin-top:0" for="edName">File name</label>
+    <div style="display:flex;gap:8px"><input class="fld" id="edName" value="index.html" autocapitalize="off"><button class="chip on" onclick="loadFile()">Load</button></div>
+    <label for="edCode">Code</label><textarea class="fld" id="edCode" style="min-height:260px" placeholder="Code appears here"></textarea>
+    <div class="row"><button class="btn ghost" onclick="previewCode('edCode','pv2')">Preview</button><button class="btn" id="edSave" onclick="saveFile()">Save changes</button></div>
+    <iframe id="pv2" sandbox="allow-scripts" style="display:none;width:100%;height:260px;border:1px solid var(--line);border-radius:12px;margin-top:10px;background:#fff"></iframe>
+    <label for="edUp">Upload more files to this site</label>
+    <input class="fld" id="edUp" type="file" multiple accept=".html,.htm,.css,.js,.json,.png,.jpg,.jpeg,.gif,.svg,.webp,.ico,.txt">
+    <label for="edIcon">Set website icon (shown in browser tab)</label><input class="fld" id="edIcon" type="file" accept="image/*">
+    <p class="note">Saving updates the live site. It can take a minute or two to show the new version.</p>
+  </div>
+</section>
+
+<section class="view" id="files">
+  <div class="top"><button class="ib" onclick="go('detail')" aria-label="Back">←</button><h2 id="flTitle">Files</h2></div>
+  <div class="card" style="padding:4px 16px" id="flList"></div>
+  <div class="card">
+    <div class="row" style="margin-top:0"><button class="btn" onclick="newFile()">New file</button></div>
+    <label for="flUp">Upload files (same name replaces the old file)</label>
+    <input class="fld" id="flUp" type="file" multiple>
+  </div>
+</section>
+
+<section class="view" id="render">
+  <div class="top"><div class="logo" style="background:var(--ink)">🚀</div><h2>Render deploy</h2><button class="ib" onclick="go('rdSet')" aria-label="Render settings">⚙️</button><button class="ib" onclick="rdLoad()" aria-label="Refresh">⟳</button></div>
+  <div class="card" id="rdKey">
+    <h3 style="font-size:16px">Connect Render</h3>
+    <label for="rdTok">Render API key</label><input class="fld" id="rdTok" type="password" placeholder="rnd_…" autocomplete="off">
+    <label for="rdProxy">Proxy URL</label><input class="fld" id="rdProxy" placeholder="https://sanhub-render-proxy.onrender.com" inputmode="url" autocapitalize="off">
+    <button class="btn" style="margin-top:14px" onclick="rdConnect()">Connect Render</button>
+    <button class="btn ghost" id="pxBtn" style="margin-top:10px" onclick="bpProxy()">Create my free proxy</button>
+    <p class="note">Render does not allow calls straight from a browser, so the app talks to a tiny proxy that you own. Tap "Create my free proxy", deploy it on Render, then paste its https URL above. Your key goes only to your own proxy. The first request after it sleeps can take about a minute.</p>
+    <p class="note">Create a key in Render under Account settings → API keys. <a href="https://dashboard.render.com/u/settings#api-keys" target="_blank" rel="noopener">Open Render</a>. It stays only in this browser.</p>
+  </div>
+  <div id="rdMain" style="display:none">
+    <div class="card">
+      <h3 style="font-size:15px">Deploy a website</h3>
+      <label for="rdRepo">GitHub repository (public)</label><select class="fld" id="rdRepo" onchange="rdPick()"></select>
+      <label for="rdName">Service name</label><input class="fld" id="rdName" autocapitalize="off">
+      <label for="rdBranch">Branch</label><input class="fld" id="rdBranch" autocapitalize="off">
+      <label for="rdPath">Publish folder</label><input class="fld" id="rdPath" value="." autocapitalize="off">
+      <label for="rdBuild">Build command (optional)</label><input class="fld" id="rdBuild" placeholder="Leave empty for plain HTML" autocapitalize="off">
+      <button class="btn" id="rdDeployBtn" style="margin-top:16px" onclick="rdDeploy()">Deploy to Render</button>
+      <p class="note">Creates a free static site from the repo and redeploys on every push.</p>
+    </div>
+    <div class="sec"><h3>My Render sites</h3><a onclick="rdLogout()">Disconnect</a></div>
+    <div id="rdList"></div>
+  </div>
+  <div class="card" id="rdBp">
+    <h3 style="font-size:15px">Blueprint deploy (render.yaml)</h3>
+    <p class="note" style="margin-top:4px">A Blueprint is a render.yaml file in your repo. Render reads it and creates the services for you. This works without the API key.</p>
+    <label for="bpRepo">GitHub repository (public)</label><select class="fld" id="bpRepo" onchange="bpGen()"></select>
+    <label for="bpType">Blueprint type</label>
+    <select class="fld" id="bpType" onchange="bpGen(true)"><option value="static">Static website</option><option value="node">Web service – Node</option><option value="python">Web service – Python</option></select>
+    <label for="bpYaml">render.yaml</label><textarea class="fld" id="bpYaml" style="min-height:190px" spellcheck="false" placeholder="Choose a repo to load or generate render.yaml"></textarea>
+    <div class="row"><button class="btn ghost" onclick="bpGen(true)">Reset</button><button class="btn" id="bpSave" onclick="bpSave()">Save to repo</button></div>
+    <div class="row"><button class="btn" onclick="bpDeploy()">Deploy Blueprint on Render</button></div>
+  </div>
+</section>
+
+<section class="view" id="rdSvc">
+  <div class="top"><button class="ib" onclick="go('render')" aria-label="Back">←</button><h2 id="rsTitle">Service</h2></div>
+  <div class="chips" id="rsTabs"></div>
+  <div id="rsBody"></div>
+</section>
+
+<section class="view" id="rdSet">
+  <div class="top"><button class="ib" onclick="go('render')" aria-label="Back">←</button><h2>Render settings</h2></div>
+  <div class="card" id="rsAcct"></div>
+  <div class="card">
+    <h3 style="font-size:15px">Proxy</h3>
+    <label for="dfProxy">Proxy URL</label><input class="fld" id="dfProxy" placeholder="https://sanhub-render-proxy.onrender.com" inputmode="url" autocapitalize="off">
+    <button class="btn" style="margin-top:14px" onclick="saveProxy()">Save proxy</button>
+  </div>
+  <div class="card">
+    <h3 style="font-size:15px">Defaults for new deploys</h3>
+    <label for="dfPath">Publish folder</label><input class="fld" id="dfPath" placeholder=".">
+    <label for="dfBuild">Build command</label><input class="fld" id="dfBuild" placeholder="Leave empty for plain HTML">
+    <button class="btn" style="margin-top:14px" onclick="saveDefaults()">Save defaults</button>
+  </div>
+  <div class="card">
+    <a class="btn ghost" href="https://dashboard.render.com" target="_blank" rel="noopener">Open Render dashboard</a>
+    <div class="row"><button class="btn ghost" onclick="rdLoad().then(drawRdSet)">Refresh data</button><button class="btn del" onclick="rdLogout().then(()=>go('render'))">Disconnect</button></div>
+  </div>
+</section>
+
+<section class="view" id="github">
+  <div class="top"><div class="logo" style="background:var(--ink)">🐙</div><h2>GitHub repositories</h2></div>
+  <div class="card hero" style="margin-bottom:14px"><div class="logo" id="av2" style="width:50px;height:50px;border-radius:50%">S</div><div style="flex:1"><b id="gName"></b><small id="gLogin"></small></div><a class="chip on" id="gLink" target="_blank" rel="noopener" style="text-decoration:none">View profile</a></div>
+  <div class="seg"><button class="on" id="tRepos" onclick="ghTab('repos')">Repositories</button><button id="tStars" onclick="ghTab('stars')">Stars</button></div>
+  <div class="card" id="repos" style="padding:4px 16px"></div>
+</section>
+
+<section class="view" id="statsV">
+  <div class="top"><button class="ib" onclick="go('profile')" aria-label="Back">←</button><h2>Quick stats</h2></div>
+  <div class="stats" style="grid-template-columns:1fr 1fr" id="stats2"></div>
+  <div class="card"><h3 style="font-size:15px;margin-bottom:6px">Recent activity</h3><div id="activity"></div></div>
+</section>
+
+<section class="view" id="profile">
+  <div class="top"><h2>Profile &amp; settings</h2></div>
+  <div class="card hero"><div class="logo" id="av3" style="width:54px;height:54px;border-radius:50%">S</div><div style="flex:1"><b id="pName"></b><small id="pLogin"></small></div></div>
+  <div class="card" style="padding:4px 16px">
+    <div class="menu" onclick="go('statsV')">📊 Quick stats<em>›</em></div>
+    <div class="menu" onclick="$('appIcon').click()">🖼️ App icon<em>Change</em></div>
+    <input type="file" id="appIcon" accept="image/*" hidden>
+    <div class="menu" onclick="refresh()">⟳ Refresh data<em id="pCount"></em></div>
+    <div class="menu" onclick="openExt(S.user.html_url,'_blank')">👤 GitHub account<em>›</em></div>
+    <div class="menu" style="color:var(--red)" onclick="logout()">⎋ Log out<em></em></div>
+  </div>
+</section>
+
+<nav class="nav" id="nav">
+  <button data-go="home" class="on"><span>🏠</span>Home</button>
+  <button data-go="sites"><span>🌐</span>Websites</button>
+  <button data-go="github"><span>🐙</span>GitHub</button>
+  <button data-go="render"><span>🚀</span>Render</button>
+  <button data-go="profile"><span>👤</span>Profile</button>
+</nav>
+<div class="modal" id="modal"><div class="mbox"><h3 id="mTitle"></h3><p id="mMsg"></p><input class="fld" id="mIn"><div class="row"><button class="btn ghost" id="mNo">Cancel</button><button class="btn" id="mOk">OK</button></div></div></div>
+<div class="toast" id="toast" role="status"></div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const S={token:localStorage.getItem('sh_token')||'',user:null,repos:[],stars:[],f1:'All',f2:'All',cur:null,tab:'repos'};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),2600+t.length*35)}
+
+/* open links in the external browser (not inside this app) */
+function openExt(url){
+  const ua=navigator.userAgent;
+  if(/Android/i.test(ua)&&(/; wv\)/.test(ua)||/Version\/[\d.]+ Chrome/.test(ua))){
+    location.href='intent://'+url.replace(/^https?:\/\//,'')+'#Intent;scheme=https;action=android.intent.action.VIEW;end';return;
+  }
+  const w=window.open(url,'_blank');
+  if(w){try{w.opener=null}catch(e){}}else{(navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(()=>toast('Link copied – paste it in your browser'),()=>toast(url))}
+}
+document.addEventListener('click',e=>{const a=e.target.closest('a[target="_blank"]');if(a){e.preventDefault();openExt(a.href)}});
+
+/* dialogs (prompt/confirm are blocked in many in-app browsers) */
+function ask(o){return new Promise(res=>{const m=$('modal'),i=$('mIn'),ok=$('mOk');$('mTitle').textContent=o.title;$('mMsg').textContent=o.msg||'';i.style.display=o.input?'block':'none';i.value=o.value||'';i.placeholder=o.ph||'';ok.textContent=o.ok||'OK';ok.className='btn'+(o.danger?' del':'');m.classList.add('on');if(o.input)setTimeout(()=>i.focus(),60);
+  const done=v=>{m.classList.remove('on');ok.onclick=$('mNo').onclick=null;res(v)};ok.onclick=()=>done(o.input?i.value:true);$('mNo').onclick=()=>done(o.input?null:false)})}
+/* icons */
+function toPng(file,size){return new Promise((ok,no)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=c.height=size;const x=c.getContext('2d'),m=Math.min(im.width,im.height);x.drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,size,size);URL.revokeObjectURL(u);ok(c.toDataURL('image/png'))};im.onerror=()=>no(new Error('Cannot read image'));im.src=u})}
+function withIcon(html,f){const ln='\n';html=html.replace(/<link[^>]*rel=["'](?:shortcut )?(?:icon|apple-touch-icon)["'][^>]*>\s*/gi,'');return /<head[^>]*>/i.test(html)?html.replace(/<head[^>]*>/i,m=>m+'\n'+ln):ln+'\n'+html}
+function applyIcon(){const d=localStorage.getItem('sh_icon');if(!d)return;document.querySelectorAll('link[rel="icon"],link[rel="apple-touch-icon"]').forEach(l=>l.remove());['icon','apple-touch-icon'].forEach(r=>{const l=document.createElement('link');l.rel=r;l.href=d;document.head.appendChild(l)});$('loginLogo').innerHTML='<img src="'+d+'" alt="">'}
+$('appIcon').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{localStorage.setItem('sh_icon',await toPng(f,192));applyIcon();toast('App icon updated')}catch(x){toast(x.message)}e.target.value=''};
+applyIcon();
+async function setSiteIcon(file){
+  const r=find(S.cur);toast('Setting icon…');
+  try{
+    const png=(await toPng(file,192)).split(',')[1];
+    const u=await putFile(r.full_name,r.default_branch,'favicon.png',png,'Add favicon via SANHUB');if(!u.ok){toast(msg(u));return}
+    const g=await gh(`/repos/${r.full_name}/contents/index.html?ref=${r.default_branch}`);
+    if(!g.ok){toast('Icon uploaded. index.html not found to link it.');return}
+    const html=decodeURIComponent(escape(atob(g.data.content.replace(/\n/g,''))));
+    const sv=await putFile(r.full_name,r.default_branch,'index.html',b64(withIcon(html,'favicon.png')),'Link favicon via SANHUB');
+    if(sv.ok){toast('Icon set – refresh the site in a minute');if($('edName').value.trim()==='index.html')loadFile()}else toast(msg(sv));
+  }catch(x){toast(x.message)}
+}
+$('edIcon').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)setSiteIcon(f)};
+
+/* ===== Render.com ===== */
+const RD={key:localStorage.getItem('sh_render')||'',owner:null,services:null};
+const rdBase=()=>((localStorage.getItem('sh_rd_proxy')||'').replace(/\/+$/,'')||'https://api.render.com')+'/v1';
+async function rd(path,o={}){
+  try{
+    const r=await fetch(rdBase()+path,{method:o.method||'GET',headers:Object.assign({Authorization:'Bearer '+RD.key,Accept:'application/json'},o.body?{'Content-Type':'application/json'}:{}),body:o.body?JSON.stringify(o.body):undefined});
+    let d=null;try{d=await r.json()}catch(e){}
+    return{ok:r.ok,status:r.status,data:d};
+  }catch(e){return{ok:false,status:0,data:{message:'Network error: '+((e&&e.message)||e)}}}
+}
+const CORSMSG='Render blocks direct calls from the browser. Create your free proxy in the Render tab and paste its URL there.';
+async function rdLoad(){
+  if(!RD.key){drawRender();return false}
+  const o=await rd('/owners?limit=20');
+  if(!o.ok){
+    toast(o.status===0?CORSMSG:o.status===401?'Render key is invalid':msg(o));
+    if(o.status===401){RD.key='';localStorage.removeItem('sh_render')}
+    RD.owner=null;drawRender();return false;
+  }
+  RD.owner=(o.data[0]&&o.data[0].owner||{}).id||null;
+  const sv=await rd('/services?limit=100');
+  RD.services=sv.ok?sv.data.map(x=>x.service):[];if(!sv.ok)toast(msg(sv));
+  drawRender();return true;
+}
+async function rdConnect(){
+  const k=$('rdTok').value.trim();if(!k){toast('Paste your Render API key');return}
+  const px=$('rdProxy').value.trim();if(px&&!/^https:\/\//i.test(px)){toast('Proxy URL must start with https://');return}
+  if(px)localStorage.setItem('sh_rd_proxy',px);
+  RD.key=k;const ok=await rdLoad();
+  if(ok){localStorage.setItem('sh_render',k);$('rdTok').value='';toast('Render connected')}else if(RD.key===k&&!localStorage.getItem('sh_render'))RD.key='';
+  drawRender();
+}
+async function rdLogout(){if(!await ask({title:'Disconnect Render',msg:'Remove the saved Render key from this browser?',ok:'Disconnect',danger:true}))return;localStorage.removeItem('sh_render');RD.key='';RD.owner=null;RD.services=null;drawRender()}
+function drawRender(){
+  const bs=$('bpRepo'),bv=bs.value,bp=S.repos.filter(r=>!r.private);
+  bs.innerHTML=bp.map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('');
+  if(bv&&bp.some(r=>String(r.id)===bv))bs.value=bv;
+  if(bs.value&&!$('bpYaml').value&&!bs._t){bs._t=1;bpGen()}
+  const on=!!(RD.key&&RD.owner);
+  $('rdKey').style.display=on?'none':'block';$('rdMain').style.display=on?'block':'none';
+  if(!on)return;
+  const sel=$('rdRepo'),v=sel.value,pub=S.repos.filter(r=>!r.private);
+  sel.innerHTML=pub.map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('');
+  if(v&&pub.some(r=>String(r.id)===v))sel.value=v;
+  if(!$('rdName').value)rdPick();
+  const L=RD.services;
+  $('rdList').innerHTML=!L?'<div class="spin">Loading…</div>':!L.length?'<div class="empty">No Render services yet. Deploy a website above.</div>':L.map((x,i)=>{
+    const url=x.serviceDetails&&x.serviceDetails.url,sus=x.suspended==='suspended';
+    return `<div class="card"><div class="hero" style="margin-bottom:8px"><div class="ico">🚀</div><div style="flex:1;min-width:0"><b style="font-size:15px;word-break:break-word">${esc(x.name)}</b><small>${esc((x.type||'').replace('_',' '))}${x.branch?' · '+esc(x.branch):''}</small></div><span class="tag ${sus?'draft':'live'}">${sus?'Suspended':'Active'}</span></div>
+    ${url?`<p style="color:var(--blue);font-size:12.5px;word-break:break-all;margin-bottom:10px">${esc(url)}</p>`:''}
+    <div class="row" style="margin-top:0">${url?`<a class="btn" href="${esc(url)}" target="_blank" rel="noopener">Open site</a>`:''}<a class="btn ghost" href="${esc(x.dashboardUrl||'https://dashboard.render.com')}" target="_blank" rel="noopener">Dashboard</a></div>
+    <div class="row"><button class="btn" onclick="rdManage(${i})">Manage backend</button></div>
+    <div class="row"><button class="btn ghost" onclick="rdAct(${i},'deploy')">Redeploy</button><button class="btn ghost" onclick="rdAct(${i},'${sus?'resume':'suspend'}')">${sus?'Resume':'Suspend'}</button></div>
+    <div class="row"><button class="btn del" onclick="rdAct(${i},'delete')">Delete service</button></div></div>`}).join('');
+}
+const BPT={
+  static:n=>`services:\n  - type: web\n    name: ${n}\n    runtime: static\n    staticPublishPath: .\n`,
+  node:n=>`services:\n  - type: web\n    name: ${n}\n    runtime: node\n    plan: free\n    buildCommand: npm install\n    startCommand: npm start\n`,
+  python:n=>`services:\n  - type: web\n    name: ${n}\n    runtime: python\n    plan: free\n    buildCommand: pip install -r requirements.txt\n    startCommand: gunicorn app:app\n`};
+const bpRepo=()=>S.repos.find(x=>String($('bpRepo').value)===String(x.id));
+async function bpGen(force){
+  const r=bpRepo();if(!r)return;
+  if(!force){
+    const g=await gh(`/repos/${r.full_name}/contents/render.yaml?ref=${r.default_branch}`);
+    if(g.ok&&g.data.content){$('bpYaml').value=decodeURIComponent(escape(atob(g.data.content.replace(/\n/g,''))));toast('Loaded existing render.yaml');return}
+  }
+  $('bpYaml').value=BPT[$('bpType').value](r.name.toLowerCase().replace(/[^a-z0-9-]+/g,'-'));
+}
+async function bpSave(){
+  const r=bpRepo(),y=$('bpYaml').value;if(!r||!y.trim()){toast('Nothing to save');return}
+  const b=$('bpSave');b.disabled=true;b.textContent='Saving…';
+  const res=await putFile(r.full_name,r.default_branch,'render.yaml',b64(y),'Add render.yaml via SANHUB');
+  b.disabled=false;b.textContent='Save to repo';
+  if(res.ok){toast('render.yaml saved to '+r.name);r._files=null;r._ft=0}else toast(msg(res));
+}
+async function bpDeploy(){
+  const r=bpRepo();if(!r){toast('Choose a repository');return}
+  const g=await gh(`/repos/${r.full_name}/contents/render.yaml?ref=${r.default_branch}`);
+  if(!g.ok){toast('Save render.yaml to the repo first');return}
+  openExt('https://render.com/deploy?repo='+r.html_url);
+}
+
+/* ===== Render backend control ===== */
+const RS={id:null,svc:null,tab:'overview',env:[]};
+const rdMsg=r=>r.status===0?CORSMSG:msg(r);
+const okR=r=>r.ok||r.status===204||r.status===202;
+function rdManage(i){RS.id=RD.services[i].id;RS.svc=RD.services[i];RS.tab='overview';go('rdSvc')}
+const RTABS=[['overview','Overview'],['env','Env vars'],['deploys','Deploys'],['logs','Logs'],['domains','Domains'],['settings','Settings']];
+async function rsShow(tab){
+  RS.tab=tab;$('rsTabs').innerHTML=RTABS.map(t=>`<button class="chip ${t[0]===tab?'on':''}" onclick="rsShow('${t[0]}')">${t[1]}</button>`).join('');
+  $('rsBody').innerHTML='<div class="spin">Loading…</div>';
+  const g=await rd('/services/'+RS.id);if(!g.ok){toast(rdMsg(g));$('rsBody').innerHTML='<div class="empty">Could not load this service.</div>';return}
+  RS.svc=g.data;$('rsTitle').textContent=RS.svc.name;
+  await ({overview:rsOverview,env:rsEnv,deploys:rsDeploys,logs:rsLogs,domains:rsDomains,settings:rsSettings}[tab])();
+}
+const isStatic=()=>RS.svc.type==='static_site';
+const kvr=(a,b)=>`<div class="kv"><span>${a}</span><b style="text-align:right;word-break:break-all">${esc(b??'—')}</b></div>`;
+function rsOverview(){
+  const x=RS.svc,sd=x.serviceDetails||{},sus=x.suspended==='suspended';
+  $('rsBody').innerHTML=`<div class="card"><div class="hero"><div class="ico">🚀</div><div style="flex:1;min-width:0"><b style="word-break:break-word">${esc(x.name)}</b><small>${esc((x.type||'').replace(/_/g,' '))}</small></div><span class="tag ${sus?'draft':'live'}">${sus?'Suspended':'Active'}</span></div>
+  ${sd.url?`<a class="btn" href="${esc(sd.url)}" target="_blank" rel="noopener" style="margin-bottom:10px">Open site</a>`:''}
+  <a class="btn ghost" href="${esc(x.dashboardUrl||'https://dashboard.render.com')}" target="_blank" rel="noopener">Open in Render dashboard</a>
+  <div class="row"><button class="btn ghost" onclick="rsAct('deploy')">Deploy latest</button><button class="btn ghost" onclick="rsAct('deploy-clear')">Clear cache &amp; deploy</button></div>
+  <div class="row">${isStatic()?'':`<button class="btn ghost" onclick="rsAct('restart')">Restart</button>`}<button class="btn ghost" onclick="rsAct('${sus?'resume':'suspend'}')">${sus?'Resume':'Suspend'}</button></div>
+  <div class="row"><button class="btn del" onclick="rsAct('delete')">Delete service</button></div>
+  <div style="margin-top:14px">${kvr('Repository',x.repo)}${kvr('Branch',x.branch)}${kvr('Auto-deploy',x.autoDeploy)}${kvr('Region',sd.region)}${kvr('Created',x.createdAt?ago(x.createdAt):'')}${kvr('Updated',x.updatedAt?ago(x.updatedAt):'')}${kvr('Service ID',x.id)}</div></div>`;
+}
+async function rsAct(a){
+  const x=RS.svc;let res;
+  if(a==='delete'){
+    const t=await ask({title:'Delete service',msg:'This permanently removes "'+x.name+'" from Render. Type its name to confirm.',input:true,ph:x.name,ok:'Delete',danger:true});
+    if(t!==x.name){if(t!==null)toast('Name did not match – nothing deleted');return}
+    res=await rd('/services/'+x.id,{method:'DELETE'});
+    if(okR(res)){toast('Service deleted');RD.services=null;go('render')}else toast(rdMsg(res));return;
+  }
+  if(a==='deploy'||a==='deploy-clear')res=await rd(`/services/${x.id}/deploys`,{method:'POST',body:{clearCache:a==='deploy'?'do_not_clear':'clear'}});
+  else res=await rd(`/services/${x.id}/${a}`,{method:'POST'});
+  if(okR(res)){toast({deploy:'Deploy started','deploy-clear':'Deploy started',restart:'Restarting',suspend:'Suspended',resume:'Resumed'}[a]);rsShow(RS.tab)}else toast(rdMsg(res));
+}
+/* env vars */
+async function rsEnv(){
+  const r=await rd(`/services/${RS.id}/env-vars?limit=100`);if(!r.ok){toast(rdMsg(r));return}
+  RS.env=r.data.map(e=>e.envVar||e);
+  $('rsBody').innerHTML=`<div class="card" style="padding:4px 16px">${RS.env.length?RS.env.map((e,i)=>`<div class="kv" style="display:block"><b style="font-size:12.5px;word-break:break-all">${esc(e.key)}</b><input class="fld" id="evv${i}" value="${esc(e.value||'')}" placeholder="${e.value?'':'(generated or secret)'}" style="margin:6px 0" autocapitalize="off"><div class="row" style="margin-top:0"><button class="chip on" onclick="rsEnvSave(${i})">Save</button><button class="chip" style="color:var(--red)" onclick="rsEnvDel(${i})">Delete</button></div></div>`).join(''):'<div class="empty">No environment variables yet.</div>'}</div>
+  <div class="card"><h3 style="font-size:15px">Add variable</h3><label for="evK">Key</label><input class="fld" id="evK" placeholder="API_URL" autocapitalize="off"><label for="evV">Value</label><input class="fld" id="evV" autocapitalize="off"><button class="btn" style="margin-top:14px" onclick="rsEnvAdd()">Add variable</button><p class="note">Changing variables redeploys the service.</p></div>`;
+}
+async function rsEnvSave(i){const e=RS.env[i],r=await rd(`/services/${RS.id}/env-vars/${encodeURIComponent(e.key)}`,{method:'PUT',body:{value:$('evv'+i).value}});if(okR(r)){toast('Saved '+e.key);rsEnv()}else toast(rdMsg(r))}
+async function rsEnvDel(i){const e=RS.env[i];if(!await ask({title:'Delete variable',msg:'Delete '+e.key+'?',ok:'Delete',danger:true}))return;const r=await rd(`/services/${RS.id}/env-vars/${encodeURIComponent(e.key)}`,{method:'DELETE'});if(okR(r)){toast('Deleted');rsEnv()}else toast(rdMsg(r))}
+async function rsEnvAdd(){const k=$('evK').value.trim();if(!/^[A-Za-z_][A-Za-z0-9_]*$/.test(k)){toast('Key: letters, numbers and _ only');return}const r=await rd(`/services/${RS.id}/env-vars/${encodeURIComponent(k)}`,{method:'PUT',body:{value:$('evV').value}});if(okR(r)){toast('Added '+k);rsEnv()}else toast(rdMsg(r))}
+/* deploys */
+async function rsDeploys(){
+  const r=await rd(`/services/${RS.id}/deploys?limit=20`);if(!r.ok){toast(rdMsg(r));return}
+  const L=r.data.map(x=>x.deploy||x);RS.dep=L;
+  $('rsBody').innerHTML=`<button class="btn" onclick="rsAct('deploy')" style="margin-bottom:12px">Trigger new deploy</button><div class="card" style="padding:4px 16px">${L.length?L.map((d,i)=>{const busy=/in_progress|created/.test(d.status);return `<div class="repo" style="cursor:default;align-items:flex-start"><div style="flex:1;min-width:0"><b style="word-break:break-word">${esc((d.commit&&d.commit.message||d.trigger||'Deploy').split('\n')[0])}</b><small>${esc(d.status.replace(/_/g,' '))} · ${d.createdAt?ago(d.createdAt):''}</small></div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end"><span class="tag ${d.status==='live'?'live':'draft'}">${d.status==='live'?'Live':busy?'Running':'Done'}</span>${busy?`<button class="chip" style="color:var(--red)" onclick="rsCancel(${i})">Cancel</button>`:d.status!=='live'&&!/failed|canceled/.test(d.status)?`<button class="chip" onclick="rsRollback(${i})">Rollback</button>`:''}</div></div>`}).join(''):'<div class="empty">No deploys yet.</div>'}</div>`;
+}
+async function rsCancel(i){const r=await rd(`/services/${RS.id}/deploys/${RS.dep[i].id}/cancel`,{method:'POST'});if(okR(r)){toast('Deploy canceled');rsDeploys()}else toast(rdMsg(r))}
+async function rsRollback(i){if(!await ask({title:'Roll back',msg:'Redeploy this earlier version?',ok:'Roll back'}))return;const r=await rd(`/services/${RS.id}/rollback`,{method:'POST',body:{deployId:RS.dep[i].id}});if(okR(r)){toast('Rolling back');rsDeploys()}else toast(rdMsg(r))}
+/* logs */
+async function rsLogs(){
+  const r=await rd(`/logs?ownerId=${RD.owner}&resource=${RS.id}&limit=100&direction=backward`);if(!r.ok){toast(rdMsg(r));return}
+  const L=(r.data.logs||[]).slice().reverse();
+  $('rsBody').innerHTML=`<button class="btn ghost" onclick="rsLogs()" style="margin-bottom:12px">Refresh logs</button><div class="card"><pre style="white-space:pre-wrap;word-break:break-all;font:11px/1.5 ui-monospace,Consolas,monospace;max-height:60vh;overflow:auto">${L.length?esc(L.map(l=>(l.timestamp||'').slice(11,19)+'  '+l.message).join('\n')):'No logs yet.'}</pre></div>`;
+}
+/* domains */
+async function rsDomains(){
+  const r=await rd(`/services/${RS.id}/custom-domains?limit=50`);if(!r.ok){toast(rdMsg(r));return}
+  RS.dom=r.data.map(x=>x.customDomain||x);
+  $('rsBody').innerHTML=`<div class="card" style="padding:4px 16px">${RS.dom.length?RS.dom.map((d,i)=>`<div class="repo" style="cursor:default"><div style="flex:1;min-width:0"><b style="word-break:break-all">${esc(d.name)}</b><small>${esc(d.verificationStatus||'')}</small></div>${d.verificationStatus!=='verified'?`<button class="chip on" onclick="rsDomVerify(${i})">Verify</button>`:''}<button class="chip" style="color:var(--red)" onclick="rsDomDel(${i})">Delete</button></div>`).join(''):'<div class="empty">No custom domains.</div>'}</div>
+  <div class="card"><h3 style="font-size:15px">Add custom domain</h3><label for="dmN">Domain</label><input class="fld" id="dmN" placeholder="www.example.com" autocapitalize="off" inputmode="url"><button class="btn" style="margin-top:14px" onclick="rsDomAdd()">Add domain</button><p class="note">Point your domain's DNS to Render, then tap Verify.</p></div>`;
+}
+async function rsDomAdd(){const n=$('dmN').value.trim().toLowerCase();if(!n){toast('Enter a domain');return}const r=await rd(`/services/${RS.id}/custom-domains`,{method:'POST',body:{name:n}});if(okR(r)){toast('Domain added');rsDomains()}else toast(rdMsg(r))}
+async function rsDomVerify(i){const r=await rd(`/services/${RS.id}/custom-domains/${RS.dom[i].id}/verify`,{method:'POST'});if(okR(r)){toast('Verification requested');rsDomains()}else toast(rdMsg(r))}
+async function rsDomDel(i){if(!await ask({title:'Delete domain',msg:'Remove '+RS.dom[i].name+'?',ok:'Delete',danger:true}))return;const r=await rd(`/services/${RS.id}/custom-domains/${RS.dom[i].id}`,{method:'DELETE'});if(okR(r)){toast('Domain removed');rsDomains()}else toast(rdMsg(r))}
+/* settings */
+function rsSettings(){
+  const x=RS.svc,sd=x.serviceDetails||{},env=sd.envSpecificDetails||{},st=isStatic();
+  $('rsBody').innerHTML=`<div class="card"><label style="margin-top:0" for="stName">Service name</label><input class="fld" id="stName" value="${esc(x.name)}" autocapitalize="off">
+  <label for="stBranch">Branch</label><input class="fld" id="stBranch" value="${esc(x.branch||'')}" autocapitalize="off">
+  <label for="stAuto">Auto-deploy on every push</label><select class="fld" id="stAuto"><option value="yes" ${x.autoDeploy==='yes'?'selected':''}>Yes</option><option value="no" ${x.autoDeploy==='no'?'selected':''}>No</option></select>
+  ${st?`<label for="stPub">Publish folder</label><input class="fld" id="stPub" value="${esc(sd.publishPath||'')}" autocapitalize="off">`:`<label for="stStart">Start command</label><input class="fld" id="stStart" value="${esc(env.startCommand||'')}" autocapitalize="off">`}
+  <label for="stBuild">Build command</label><input class="fld" id="stBuild" value="${esc((st?sd.buildCommand:env.buildCommand)||'')}" autocapitalize="off">
+  <button class="btn" style="margin-top:16px" onclick="rsSave()">Save settings</button></div>
+  ${st?'':`<div class="card"><label style="margin-top:0" for="stInst">Instances</label><input class="fld" id="stInst" type="number" min="1" value="${sd.numInstances||1}"><button class="btn ghost" style="margin-top:12px" onclick="rsScale()">Scale</button><p class="note">More than one instance needs a paid Render plan.</p></div>`}`;
+}
+async function rsSave(){
+  const st=isStatic(),body={name:$('stName').value.trim(),branch:$('stBranch').value.trim(),autoDeploy:$('stAuto').value};
+  body.serviceDetails=st?{publishPath:$('stPub').value.trim(),buildCommand:$('stBuild').value.trim()}:{envSpecificDetails:{buildCommand:$('stBuild').value.trim(),startCommand:$('stStart').value.trim()}};
+  const r=await rd('/services/'+RS.id,{method:'PATCH',body});
+  if(okR(r)){toast('Settings saved');RD.services=null;rsShow('settings')}else toast(rdMsg(r));
+}
+async function rsScale(){const n=parseInt($('stInst').value,10);if(!(n>=1)){toast('Enter 1 or more');return}const r=await rd(`/services/${RS.id}/scale`,{method:'POST',body:{numInstances:n}});if(okR(r))toast('Scaled to '+n);else toast(rdMsg(r))}
+/* Render settings screen */
+async function drawRdSet(){
+  const d=JSON.parse(localStorage.getItem('sh_rd_def')||'{}');$('dfProxy').value=localStorage.getItem('sh_rd_proxy')||'';$('dfPath').value=d.path||'';$('dfBuild').value=d.build||'';
+  if(!RD.key){$('rsAcct').innerHTML='<h3 style="font-size:15px">Not connected</h3><p class="note">Connect your Render API key in the Render tab first.</p><button class="btn" style="margin-top:12px" onclick="go(\'render\')">Go to Render</button>';return}
+  $('rsAcct').innerHTML='<div class="spin">Loading…</div>';
+  const o=await rd('/owners?limit=20');const ow=o.ok&&o.data[0]?o.data[0].owner:null;
+  $('rsAcct').innerHTML=`<h3 style="font-size:15px;margin-bottom:6px">Account</h3>${kvr('Name',ow&&ow.name)}${kvr('Email',ow&&ow.email)}${kvr('Type',ow&&ow.type)}${kvr('Owner ID',ow&&ow.id)}${kvr('Connection',localStorage.getItem('sh_rd_proxy')?'Via your proxy':'Direct')}${kvr('API key',RD.key.slice(0,4)+'••••••••'+RD.key.slice(-4))}${kvr('Services',RD.services?RD.services.length:'…')}`;
+}
+function saveProxy(){const v=$('dfProxy').value.trim().replace(/\/+$/,'');if(v&&!/^https:\/\//i.test(v)){toast('Proxy URL must start with https://');return}if(v)localStorage.setItem('sh_rd_proxy',v);else localStorage.removeItem('sh_rd_proxy');toast('Proxy saved');rdLoad().then(drawRdSet)}
+function saveDefaults(){localStorage.setItem('sh_rd_def',JSON.stringify({path:$('dfPath').value.trim(),build:$('dfBuild').value.trim()}));toast('Defaults saved')}
+
+/* ===== free Render proxy (user-owned) ===== */
+function proxyMain(){
+  const http=require('http');const ORIGIN=process.env.ALLOWED_ORIGIN||'*';
+  http.createServer(async(req,res)=>{
+    const cors={'Access-Control-Allow-Origin':ORIGIN,'Access-Control-Allow-Methods':'GET,POST,PUT,PATCH,DELETE,OPTIONS','Access-Control-Allow-Headers':'Authorization,Content-Type,Accept','Access-Control-Max-Age':'86400'};
+    if(req.method==='OPTIONS'){res.writeHead(204,cors);return res.end()}
+    if(req.url==='/'||req.url==='/health'){res.writeHead(200,Object.assign({'Content-Type':'text/plain'},cors));return res.end('SANHUB Render proxy OK')}
+    if(!req.url.startsWith('/v1/')){res.writeHead(404,cors);return res.end('Not found')}
+    const chunks=[];for await(const c of req)chunks.push(c);const body=Buffer.concat(chunks);
+    try{
+      const noBody=['GET','HEAD','DELETE'].includes(req.method)||!body.length;
+      const h={Authorization:req.headers.authorization||'',Accept:'application/json'};if(!noBody)h['Content-Type']=req.headers['content-type']||'application/json';
+      const r=await fetch('https://api.render.com'+req.url,{method:req.method,headers:h,body:noBody?undefined:body});
+      const text=await r.text();
+      res.writeHead(r.status,Object.assign({'Content-Type':r.headers.get('content-type')||'application/json'},cors));res.end(text);
+    }catch(e){res.writeHead(502,Object.assign({'Content-Type':'application/json'},cors));res.end(JSON.stringify({message:'Proxy error: '+e.message}))}
+  }).listen(process.env.PORT||3000);
+}
+const PROXY_FILES={
+  'server.js':'('+proxyMain.toString()+')();\n',
+  'package.json':JSON.stringify({name:'sanhub-render-proxy',version:'1.0.0',main:'server.js',scripts:{start:'node server.js'},engines:{node:'>=18'}},null,2)+'\n',
+  'render.yaml':'services:\n  - type: web\n    name: sanhub-render-proxy\n    runtime: node\n    plan: free\n    buildCommand: npm install\n    startCommand: npm start\n'
+};
+async function bpProxy(){
+  const b=$('pxBtn');b.disabled=true;b.textContent='Creating…';
+  try{
+    const name='sanhub-render-proxy';let repo;
+    const ex=await gh('/repos/'+S.user.login+'/'+name);
+    if(ex.ok)repo=ex.data;
+    else{const c=await gh('/user/repos',{method:'POST',body:{name,description:'Free proxy so SANHUB can call the Render API',auto_init:true,private:false}});if(!c.ok){toast(msg(c));return}repo=c.data;await new Promise(r=>setTimeout(r,1500))}
+    for(const path of Object.keys(PROXY_FILES)){const u=await putFile(repo.full_name,repo.default_branch,path,b64(PROXY_FILES[path]),'Add '+path+' via SANHUB');if(!u.ok){toast(path+': '+msg(u));return}}
+    toast('Proxy repo is ready. Deploy it on Render, then paste its URL here.');
+    openExt('https://render.com/deploy?repo='+repo.html_url);
+  }finally{b.disabled=false;b.textContent='Create my free proxy'}
+}
+function rdPick(){const r=S.repos.find(x=>String(x.id)===$('rdRepo').value);if(!r)return;$('rdName').value=r.name.toLowerCase().replace(/[^a-z0-9-]+/g,'-');$('rdBranch').value=r.default_branch;const d=JSON.parse(localStorage.getItem('sh_rd_def')||'{}');if(d.path)$('rdPath').value=d.path;if(d.build)$('rdBuild').value=d.build}
+function deployFrom(id){
+  const r=find(id);if(r.private){toast('Make the repository public to deploy it on Render');return}
+  go('render');if(!RD.key){toast('Connect Render first');return}
+  setTimeout(()=>{$('rdRepo').value=String(id);rdPick();$('rdRepo').scrollIntoView({block:'center'})},50);
+}
+async function rdDeploy(){
+  const r=S.repos.find(x=>String(x.id)===$('rdRepo').value),name=$('rdName').value.trim(),b=$('rdDeployBtn');
+  if(!r){toast('Choose a repository');return}
+  if(!name){toast('Enter a service name');return}
+  const det={publishPath:$('rdPath').value.trim()||'.'};if($('rdBuild').value.trim())det.buildCommand=$('rdBuild').value.trim();
+  b.disabled=true;b.textContent='Deploying…';
+  const res=await rd('/services',{method:'POST',body:{type:'static_site',name,ownerId:RD.owner,repo:r.html_url,branch:$('rdBranch').value.trim()||r.default_branch,autoDeploy:'yes',serviceDetails:det}});
+  b.disabled=false;b.textContent='Deploy to Render';
+  if(res.ok){toast('Deploy started – it can take a few minutes');rdLoad()}else toast(res.status===0?CORSMSG:msg(res));
+}
+async function rdAct(i,a){
+  const x=RD.services[i];let res;
+  if(a==='delete'){
+    const t=await ask({title:'Delete service',msg:'This removes "'+x.name+'" from Render. Type its name to confirm.',input:true,ph:x.name,ok:'Delete',danger:true});
+    if(t!==x.name){if(t!==null)toast('Name did not match – nothing deleted');return}
+    res=await rd('/services/'+x.id,{method:'DELETE'});
+  }else if(a==='deploy')res=await rd('/services/'+x.id+'/deploys',{method:'POST',body:{clearCache:'do_not_clear'}});
+  else res=await rd('/services/'+x.id+'/'+a,{method:'POST'});
+  if(res.ok||res.status===204){toast({deploy:'Redeploy started',suspend:'Suspended',resume:'Resumed',delete:'Service deleted'}[a]);rdLoad()}else toast(res.status===0?CORSMSG:msg(res));
+}
+async function gh(path,o={}){
+  try{
+    const r=await fetch(path.startsWith('http')?path:'https://api.github.com'+path,{method:o.method||'GET',headers:{Authorization:'Bearer '+S.token,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'},body:o.body?JSON.stringify(o.body):undefined});
+    let d=null;try{d=await r.json()}catch(e){}
+    return{ok:r.ok,status:r.status,data:d};
+  }catch(e){return{ok:false,status:0,data:{message:'Network error: '+((e&&e.message)||e)}}}
+}
+const msg=r=>(r.data&&r.data.message)||('Error '+r.status);
+const b64=s=>btoa(unescape(encodeURIComponent(s)));
+function ago(d){const s=(Date.now()-new Date(d))/1000;if(s<60)return'just now';const m=[[31536000,'year'],[2592000,'month'],[86400,'day'],[3600,'hour'],[60,'minute']];
+  for(const[n,u]of m){if(s>=n){const v=Math.floor(s/n);return v+' '+u+(v>1?'s':'')+' ago'}}}
+function siteUrl(r){const o=r.owner.login.toLowerCase();return r.name.toLowerCase()===o+'.github.io'?'https://'+o+'.github.io':'https://'+o+'.github.io/'+r.name}
+
+/* navigation */
+function go(v){
+  document.querySelectorAll('.view').forEach(s=>s.classList.toggle('on',s.id===v));
+  const m={home:'home',sites:'sites',detail:'sites',editor:'sites',files:'sites',add:'home',github:'github',render:'render',rdSvc:'render',rdSet:'render',profile:'profile',statsV:'profile'}[v];
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.go===m));
+  $('nav').classList.toggle('on',v!=='login');
+  $(v).scrollTop=0;render();if(v==='render'){if(RD.key&&!RD.services)rdLoad();else drawRender()}
+  if(v==='rdSvc')rsShow(RS.tab);if(v==='rdSet')drawRdSet();
+}
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>go(b.dataset.go));
+
+/* auth + data */
+async function login(){
+  const t=$('tok').value.replace(/[^\x21-\x7E]/g,'');if(!t){toast('Paste your GitHub token first');return}
+  S.token=t;const b=$('loginBtn');b.disabled=true;b.textContent='Connecting…';
+  const ok=await boot();b.disabled=false;b.textContent='Connect GitHub';
+  if(ok){localStorage.setItem('sh_token',t);$('tok').value=''}else S.token='';
+}
+async function logout(){if(!await ask({title:'Log out',msg:'Remove the saved token from this browser?',ok:'Log out',danger:true}))return;localStorage.removeItem('sh_token');S.token='';S.user=null;S.repos=[];go('login')}
+async function boot(){
+  const u=await gh('/user');
+  if(!u.ok){
+    if(u.status===0){const z=await fetch('https://api.github.com/zen').then(r=>r.ok,()=>false);toast(z?'GitHub is reachable but the token has bad characters. Copy it again from GitHub. ('+msg(u)+')':'Cannot reach api.github.com. Check your internet, or open this page directly in Safari/Chrome, not inside another app. ('+msg(u)+')')}
+    else toast(u.status===401?'Token is invalid or expired':msg(u));if(u.status===401)localStorage.removeItem('sh_token');return false}
+  S.user=u.data;
+  const all=[];
+  for(let p=1;p<=5;p++){
+    const r=await gh('/user/repos?per_page=100&affiliate=owner&sort=pushed&page='+p);
+    if(!r.ok){toast(msg(r));break}
+    all.push(...r.data);if(r.data.length<100)break;
+  }
+  S.repos=all.filter(r=>!r.fork);
+  const st=await gh('/user/starred?per_page=50');S.stars=st.ok?st.data:[];
+  const av=`<img src="${esc(S.user.avatar_url)}" alt="">`;
+  ['av1','av2','av3'].forEach(i=>$(i).innerHTML=av);
+  const nm=S.user.name||S.user.login;
+  $('uName').textContent=nm;$('uLogin').textContent='@'+S.user.login;$('hi').textContent='Hello '+nm.split(' ')[0]+' 👋';
+  $('gName').textContent=nm;$('gLogin').textContent='@'+S.user.login;$('gLink').href=S.user.html_url;
+  $('pName').textContent=nm;$('pLogin').textContent='@'+S.user.login;
+  go('home');return true;
+}
+async function refresh(){toast('Refreshing…');if(await boot())toast('Up to date')}
+
+/* render */
+const FILTERS=['All','Live','Draft','Public','Private'];
+function match(r,f,q){
+  const ok=f==='All'||(f==='Live'&&r.has_pages)||(f==='Draft'&&!r.has_pages)||(f==='Public'&&!r.private)||(f==='Private'&&r.private);
+  return ok&&(!q||(r.name+' '+(r.description||'')).toLowerCase().includes(q.toLowerCase()));
+}
+function card(r){
+  return `<div class="site" onclick="openSite(${r.id})"><div class="ico">${r.has_pages?'🌐':'📦'}</div><div class="m"><b><span>${esc(r.name)}</span><span class="tag ${r.has_pages?'live':'draft'}">${r.has_pages?'Live':'Draft'}</span></b><small>${esc(r.description||r.language||'No description')}${r.private?' · Private':''}</small><u>${r.has_pages?esc(siteUrl(r)):esc(r.html_url)}</u></div></div>`}
+function list(el,arr,n){
+  $(el).innerHTML=!S.user?'<div class="spin">Loading…</div>':arr.length?arr.slice(0,n||999).map(card).join(''):'<div class="empty">No websites found. Tap Add website to publish one.</div>'}
+const chips=k=>FILTERS.map(c=>`<button class="chip ${S[k]===c?'on':''}" onclick="S.${k}='${c}';render()">${c}</button>`).join('');
+function render(){
+  if(!S.user)return;
+  const R=S.repos,L=R.filter(r=>r.has_pages).length,P=R.filter(r=>r.private).length;
+  const st=(n,l)=>`<div class="stat"><b>${n}</b><span>${l}</span></div>`;
+  $('stats').innerHTML=st(R.length,'Total repos')+st(L,'Live')+st(R.length-L,'Draft');
+  $('stats2').innerHTML=st(R.length,'Total repos')+st(L,'Live websites')+st(R.length-L,'Not published')+st(R.reduce((a,r)=>a+r.stargazers_count,0),'Stars earned');
+  $('pCount').textContent=R.length+' repos';
+  $('chips1').innerHTML=chips('f1');$('chips2').innerHTML=chips('f2');
+  list('homeList',R.filter(r=>match(r,S.f1,$('q1').value)),3);
+  list('allList',R.filter(r=>match(r,S.f2,$('q2').value)));
+  $('activity').innerHTML=R.slice(0,6).map(r=>`<div class="act"><i></i><div><b>${esc(r.name)}</b><small>Updated ${ago(r.pushed_at||r.updated_at)}</small></div></div>`).join('')||'<div class="empty">No activity yet.</div>';
+  const src=S.tab==='repos'?R:S.stars;
+  $('repos').innerHTML=src.length?src.map(r=>`<div class="repo" onclick="openExt('${esc(r.html_url)}','_blank')"><div class="ico" style="width:38px;height:38px;font-size:17px;background:#fff0d4">📦</div><div style="flex:1;min-width:0"><b>${esc(S.tab==='stars'?r.full_name:r.name)}</b><small>${esc(r.language||'—')} · ★ ${r.stargazers_count}</small></div>${r.has_pages&&S.tab==='repos'?'<span class="tag live">Live</span>':''}</div>`).join(''):'<div class="empty">Nothing here yet.</div>';
+  if(S.cur){const r=R.find(x=>x.id===S.cur);if(r){detail(r);drawFiles()}}
+  if($('render').classList.contains('on'))drawRender();
+}
+function ghTab(t){S.tab=t;$('tRepos').classList.toggle('on',t==='repos');$('tStars').classList.toggle('on',t==='stars');render()}
+$('q1').oninput=render;$('q2').oninput=render;
+
+/* detail + actions */
+function openSite(id){S.cur=id;go('detail')}
+function detail(r){
+  const live=r.has_pages;
+  $('detailCard').innerHTML=`<div class="hero"><div class="ico" style="width:56px;height:56px">${live?'🌐':'📦'}</div><div style="flex:1;min-width:0"><b style="word-break:break-word">${esc(r.name)}</b><small>${r.private?'Private':'Public'} · ${esc(r.language||'No language')}</small></div><span class="tag ${live?'live':'draft'}">${live?'Live':'Draft'}</span></div>
+  ${live?`<p style="color:var(--blue);font-size:13px;word-break:break-all;margin-bottom:12px">${esc(siteUrl(r))}</p><a class="btn" href="${esc(siteUrl(r))}" target="_blank" rel="noopener">Open website</a>`:''}
+  <div class="row"><button class="btn" onclick="openEditor(${r.id})">Update website</button></div>
+  <div class="row"><a class="btn ghost" href="${esc(r.html_url)}" target="_blank" rel="noopener">Open repo</a><button class="btn ghost" onclick="editDesc(${r.id})">Edit info</button></div>
+  <div class="row"><button class="btn ghost" onclick="openFiles(${r.id})">Files</button><button class="btn ghost" onclick="toggleVis(${r.id})">${r.private?'Make public':'Make private'}</button></div>
+  <div class="row"><button class="btn ghost" onclick="deployFrom(${r.id})">Deploy on Render</button></div>
+  <div class="row"><button class="btn ghost" onclick="togglePages(${r.id},this)">${live?'Unpublish':'Publish'}</button><button class="btn del" onclick="delRepo(${r.id})">Delete website</button></div>
+  <h3 style="font-size:14px;margin:18px 0 6px">Description</h3><p style="color:var(--mute);font-size:13px;line-height:1.5">${esc(r.description||'No description yet.')}</p>
+  <div class="kv" style="margin-top:12px"><span>Last updated</span><b>${ago(r.pushed_at||r.updated_at)}</b></div><div class="kv"><span>Branch</span><b>${esc(r.default_branch)}</b></div><div class="kv"><span>Visibility</span><b>${r.private?'Private':'Public'}</b></div><div class="kv" style="cursor:pointer" onclick="openFiles(${r.id})"><span>Files</span><b>${r._files?r._files.length+' files · '+fmt(r._files.reduce((a,f)=>a+(f.size||0),0)):'Loading…'} ›</b></div><div class="kv"><span>Source</span><b>GitHub Pages</b></div>`;
+  if(!r._files&&!r._ft){r._ft=1;loadTree(r)}
+}
+const find=id=>S.repos.find(r=>r.id===id);
+async function togglePages(id,btn){
+  const r=find(id);btn.disabled=true;
+  const res=r.has_pages
+    ?await gh(`/repos/${r.full_name}/pages`,{method:'DELETE'})
+    :await gh(`/repos/${r.full_name}/pages`,{method:'POST',body:{source:{branch:r.default_branch,path:'/'}}});
+  btn.disabled=false;
+  if(res.ok||res.status===204){r.has_pages=!r.has_pages;toast(r.has_pages?'Published – link ready in a minute':'Unpublished');render()}
+  else toast(msg(res));
+}
+async function editDesc(id){
+  const r=find(id);
+  const n=await ask({title:'Website name',input:true,value:r.name,ph:'repository-name',ok:'Next'});if(n===null)return;
+  const v=await ask({title:'Description',input:true,value:r.description||'',ph:'Description',ok:'Save'});if(v===null)return;
+  const body={description:v},nn=n.trim().replace(/\s+/g,'-');if(nn&&nn!==r.name)body.name=nn;
+  const res=await gh('/repos/'+r.full_name,{method:'PATCH',body});
+  if(res.ok){Object.assign(r,res.data);toast(body.name?'Renamed – new link works in a minute':'Saved');render()}else toast(msg(res));
+}
+async function toggleVis(id){
+  const r=find(id),to=!r.private;
+  if(!await ask({title:to?'Make private?':'Make public?',msg:to?'Only you can see the code. On free GitHub accounts the live website goes offline while the repo is private.':'Anyone can see the code and files.',ok:to?'Make private':'Make public',danger:to}))return;
+  const res=await gh('/repos/'+r.full_name,{method:'PATCH',body:{private:to}});
+  if(!res.ok){toast(msg(res));return}
+  Object.assign(r,res.data);const g=await gh('/repos/'+r.full_name);if(g.ok)Object.assign(r,g.data);
+  toast(r.private?'Now private':'Now public');render();
+}
+/* files */
+const fmt=b=>b<1024?b+' B':b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(1)+' MB';
+const TEXT=/\.(html?|css|js|json|txt|md|xml|svg|csv|ts|jsx|yml|yaml)$/i;
+async function loadTree(r){
+  const t=await gh(`/repos/${r.full_name}/git/trees/${r.default_branch}?recursive=1`);
+  r._files=t.ok?(t.data.tree||[]).filter(x=>x.type==='blob'):[];
+  if(!t.ok&&t.status!==409)toast(msg(t));
+  render();
+}
+async function openFiles(id){S.cur=id;const r=find(id);r._files=r._files||null;go('files');loadTree(r)}
+function drawFiles(){
+  const r=find(S.cur);if(!r||!$('files').classList.contains('on'))return;
+  $('flTitle').textContent=r._files?r.name+' · '+r._files.length+' files':'Files';
+  $('flList').innerHTML=!r._files?'<div class="spin">Loading…</div>':!r._files.length?'<div class="empty">No files yet.</div>':r._files.map((f,i)=>`<div class="repo" style="cursor:default"><div class="ico" style="width:38px;height:38px;font-size:17px;background:#eaf2ff">${/\.(png|jpe?g|gif|webp|ico|svg)$/i.test(f.path)?'🖼️':/\.html?$/i.test(f.path)?'📄':/\.css$/i.test(f.path)?'🎨':/\.js$/i.test(f.path)?'⚙️':'📎'}</div><div style="flex:1;min-width:0"><b style="word-break:break-all">${esc(f.path)}</b><small>${fmt(f.size||0)}</small></div>${TEXT.test(f.path)?`<button class="chip on" onclick="editFile(${i})">Edit</button>`:''}<button class="chip" style="color:var(--red)" onclick="delFile(${i})">Delete</button></div>`).join('');
+}
+function editFile(i){const r=find(S.cur);$('edName').value=r._files[i].path;$('edCode').value='';$('pv2').style.display='none';go('editor');loadFile()}
+async function newFile(){const n=await ask({title:'New file',input:true,ph:'e.g. about.html',ok:'Create'});if(!n||!n.trim())return;$('edName').value=n.trim();$('edCode').value='';$('pv2').style.display='none';go('editor');toast('Write the code and tap Save changes')}
+async function delFile(i){
+  const r=find(S.cur),f=r._files[i];
+  if(!await ask({title:'Delete file',msg:'Delete "'+f.path+'" from this website?',ok:'Delete',danger:true}))return;
+  const res=await gh(`/repos/${r.full_name}/contents/${f.path.split('/').map(encodeURIComponent).join('/')}`,{method:'DELETE',body:{message:'Delete '+f.path+' via SANHUB',sha:f.sha,branch:r.default_branch}});
+  if(res.ok){toast('File deleted');loadTree(r)}else toast(msg(res));
+}
+$('flUp').onchange=async e=>{
+  const r=find(S.cur);let ok=0;toast('Uploading…');
+  for(const f of e.target.files){const res=await putFile(r.full_name,r.default_branch,f.name.replace(/\s+/g,'-'),await readB64(f),'Add '+f.name+' via SANHUB');if(res.ok)ok++;else toast(f.name+': '+msg(res))}
+  e.target.value='';if(ok){toast(ok+' file(s) uploaded');loadTree(r)}
+};
+async function delRepo(id){
+  const r=find(id);const t=await ask({title:'Delete website',msg:'This permanently deletes the website and all its files: "'+r.name+'". Type its name to confirm.',input:true,ph:r.name,ok:'Delete',danger:true});
+  if(t!==r.name){if(t!==null)toast('Name did not match – nothing deleted');return}
+  const res=await gh('/repos/'+r.full_name,{method:'DELETE'});
+  if(res.status===204){S.repos=S.repos.filter(x=>x.id!==id);S.cur=null;toast('Repository deleted');go('sites')}
+  else toast(res.status===403?'Token needs delete_repo access':msg(res));
+}
+
+/* add website */
+const tg=$('fLive');tg.onclick=()=>{tg.classList.toggle('on');tg.setAttribute('aria-checked',tg.classList.contains('on'))};
+tg.onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();tg.click()}};
+const readB64=f=>new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result.split(',')[1]);r.onerror=no;r.readAsDataURL(f)});
+let EXTRA=[];
+function drawExtra(){$('extraList').innerHTML=EXTRA.length?'Extra files: '+EXTRA.map((f,i)=>`${esc(f.name)} <a href="#" onclick="EXTRA.splice(${i},1);drawExtra();return false" style="color:var(--red)">remove</a>`).join(' · '):'The code above becomes index.html. CSS, JS and image files you add are uploaded next to it.'}
+drawExtra();
+$('fFile').onchange=async e=>{
+  for(const f of e.target.files){
+    if(/\.html?$/i.test(f.name)&&!$('fCode').value.trim()){$('fCode').value=await f.text();if(!$('fName').value)$('fName').value=f.name.replace(/\.html?$/i,'').replace(/[^a-z0-9._-]+/gi,'-').toLowerCase()}
+    else EXTRA.push({name:f.name.replace(/\s+/g,'-'),b64:await readB64(f)});
+  }
+  e.target.value='';drawExtra();
+};
+function previewCode(src,fr){const c=$(src).value.trim();if(!c){toast('Add some code first');return}const f=$(fr);f.srcdoc=c;f.style.display='block'}
+async function putFile(repo,branch,path,content,msg){
+  const g=await gh(`/repos/${repo}/contents/${path.split('/').map(encodeURIComponent).join('/')}?ref=${branch}`);
+  return gh(`/repos/${repo}/contents/${path.split('/').map(encodeURIComponent).join('/')}`,{method:'PUT',body:{message:msg,content,branch,sha:g.ok&&g.data.sha?g.data.sha:undefined}});
+}
+let EDSHA=null;
+async function openEditor(id){S.cur=id;$('edName').value='index.html';$('edCode').value='';$('pv2').style.display='none';go('editor');loadFile()}
+async function loadFile(){
+  const r=find(S.cur),n=$('edName').value.trim()||'index.html';$('edCode').value='Loading…';
+  const g=await gh(`/repos/${r.full_name}/contents/${n.split('/').map(encodeURIComponent).join('/')}?ref=${r.default_branch}`);
+  if(!g.ok||Array.isArray(g.data)){$('edCode').value='';EDSHA=null;toast(g.status===404?n+' not found – saving will create it':msg(g));return}
+  EDSHA=g.data.sha;try{$('edCode').value=decodeURIComponent(escape(atob(g.data.content.replace(/\n/g,''))))}catch(e){$('edCode').value='';toast('This file is not text')}
+}
+async function saveFile(){
+  const r=find(S.cur),n=$('edName').value.trim()||'index.html',b=$('edSave');
+  if(!$('edCode').value.trim()){toast('Code is empty');return}
+  b.disabled=true;b.textContent='Saving…';
+  const res=await putFile(r.full_name,r.default_branch,n,b64($('edCode').value),'Update '+n+' via SANHUB');
+  b.disabled=false;b.textContent='Save changes';
+  if(res.ok){r.pushed_at=new Date().toISOString();toast(n+' saved');r._files=null;r._ft=0;loadTree(r)}else toast('Save failed: '+msg(res));
+}
+$('edUp').onchange=async e=>{
+  const r=find(S.cur);let ok=0;
+  for(const f of e.target.files){const res=await putFile(r.full_name,r.default_branch,f.name.replace(/\s+/g,'-'),await readB64(f),'Add '+f.name+' via SANHUB');if(res.ok)ok++;else toast(f.name+': '+msg(res))}
+  e.target.value='';if(ok)toast(ok+' file(s) uploaded');
+};
+async function addSite(){
+  const name=$('fName').value.trim().replace(/\s+/g,'-'),code=$('fCode').value.trim();
+  if(!/^[A-Za-z0-9._-]+$/.test(name)){toast('Name: use letters, numbers, - or _ only');return}
+  if(!code){toast('Paste HTML code or choose a file');return}
+  const b=$('saveBtn');b.disabled=true;b.textContent='Creating repository…';
+  let finalCode=code,iconPng=null;const icf=$('fIcon').files[0];
+  if(icf){try{iconPng=(await toPng(icf,192)).split(',')[1];finalCode=withIcon(code,'favicon.png')}catch(x){toast(x.message);b.disabled=false;b.textContent='Save website';return}}
+  try{
+    const c=await gh('/user/repos',{method:'POST',body:{name,description:$('fDesc').value.trim(),auto_init:true,private:false}});
+    if(!c.ok){toast(c.status===422?'A repository with this name already exists':msg(c));return}
+    const repo=c.data;b.textContent='Uploading index.html…';
+    let up=await gh(`/repos/${repo.full_name}/contents/index.html`,{method:'PUT',body:{message:'Add index.html via SANHUB',content:b64(finalCode),branch:repo.default_branch}});
+    if(!up.ok){await new Promise(r=>setTimeout(r,1500));up=await gh(`/repos/${repo.full_name}/contents/index.html`,{method:'PUT',body:{message:'Add index.html via SANHUB',content:b64(finalCode),branch:repo.default_branch}})}
+    if(!up.ok){toast('Upload failed: '+msg(up));return}
+    if(iconPng)await putFile(repo.full_name,repo.default_branch,'favicon.png',iconPng,'Add favicon via SANHUB');
+    for(const x of EXTRA){b.textContent='Uploading '+x.name+'…';const u=await putFile(repo.full_name,repo.default_branch,x.name,x.b64,'Add '+x.name+' via SANHUB');if(!u.ok)toast(x.name+': '+msg(u))}
+    if(tg.classList.contains('on')){
+      b.textContent='Turning on Pages…';
+      const p=await gh(`/repos/${repo.full_name}/pages`,{method:'POST',body:{source:{branch:repo.default_branch,path:'/'}}});
+      if(p.ok)repo.has_pages=true;else toast('Saved, but Pages failed: '+msg(p));
+    }
+    S.repos.unshift(repo);['fName','fDesc','fCode'].forEach(i=>$(i).value='');EXTRA=[];$('fIcon').value='';drawExtra();$('pv1').style.display='none';
+    if(repo.has_pages)toast('Website published – link ready in a minute');
+    S.cur=repo.id;go('detail');
+  }finally{b.disabled=false;b.textContent='Save website'}
+}
+$('tok').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
+$('rdProxy').value=localStorage.getItem('sh_rd_proxy')||'';
+if(S.token){$('tok').value='';boot().then(ok=>{if(!ok)go('login')})}else go('login');
+</script>
+</body>
+</html>
